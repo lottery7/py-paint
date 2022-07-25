@@ -157,8 +157,6 @@ class NeuralNetwork:
 if __name__ == "__main__":
     nn = NeuralNetwork()
 
-    # nn.learn()
+    nn.learn()
     nn.load_weights_from_file("weights.txt")
     nn.test()
-    # nn.load_weights_from_file("weights.txt")
-    # nn.load_weights_to_file("test.txt")

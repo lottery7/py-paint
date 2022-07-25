@@ -5,7 +5,7 @@ from neural_network import NeuralNetwork
 
 pg.init()
 
-FPS = 60
+FPS = 360
 PIXEL_SIZE = np.array([26, 26], dtype=np.int32)
 SIZE = WIDTH, HEIGHT = PIXEL_SIZE * 28
 SCREEN = pg.display.set_mode(SIZE)
@@ -32,13 +32,6 @@ while True:
         elif (event.type == pg.KEYDOWN):
             if (event.key == pg.K_r):
                 CANVAS.fill(BLACK)
-            # elif (event.key == pg.K_e):
-            #     inputs = (pg.surfarray.array2d(pg.transform.scale(SCREEN, (28, 28))) / 2**25)
-            #     inputs = inputs.T
-            #     inputs = inputs.reshape(1, 28*28)
-            #     outputs = NN.execute(inputs)
-            #     TEXT = 
-
         elif (event.type == pg.MOUSEBUTTONUP):
             is_not_empty = np.zeros(shape=(28, 28), dtype=bool)
 
@@ -49,7 +42,6 @@ while True:
             is_not_empty[pos[0], pos[1]] = True
             pos *= PIXEL_SIZE
             pix = pg.Surface(PIXEL_SIZE)
-            # pix.set_alpha(255)
             pix.fill(WHITE)
             CANVAS.blit(pix, pos)
 
@@ -62,7 +54,7 @@ while True:
                 CANVAS.blit(pix, pos + PIXEL_SIZE * np.array([i, -i]))
 
         
-    inputs = (pg.surfarray.array2d(pg.transform.scale(CANVAS, (28, 28))) / (2**23)).T.reshape(1, 28*28)
+    inputs = (pg.surfarray.array2d(pg.transform.smoothscale(CANVAS, (28, 28))) / (2**20)).T.reshape(1, 28*28)
     outputs = NN.execute(inputs)[0]
 
 
