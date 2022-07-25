@@ -5,9 +5,10 @@ from neural_network import NeuralNetwork
 
 pg.init()
 
-FPS = 360
-PIXEL_SIZE = np.array([26, 26], dtype=np.int32)
-SIZE = WIDTH, HEIGHT = PIXEL_SIZE * 28
+FPS = 512
+# PIXEL_SIZE = np.array([26, 26], dtype=np.int32)
+RADIUS = 32
+SIZE = WIDTH, HEIGHT = 900, 720
 SCREEN = pg.display.set_mode(SIZE)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -15,9 +16,6 @@ CLOCK = pg.time.Clock()
 FONT = pg.font.Font("Inconsolata-SemiBold.ttf", 20)
 NN = NeuralNetwork()
 CANVAS = pg.Surface(SIZE)
-
-
-is_not_empty = np.zeros(shape=(28, 28), dtype=bool)
 
 
 NN.load_weights_from_file("weights.txt")
@@ -32,34 +30,18 @@ while True:
         elif (event.type == pg.KEYDOWN):
             if (event.key == pg.K_r):
                 CANVAS.fill(BLACK)
-        elif (event.type == pg.MOUSEBUTTONUP):
-            is_not_empty = np.zeros(shape=(28, 28), dtype=bool)
 
-    
     if (pg.mouse.get_pressed()[0]):
-        pos = (np.array(pg.mouse.get_pos(), dtype=np.int32) // PIXEL_SIZE)
-        if (not is_not_empty[pos[0], pos[1]]):
-            is_not_empty[pos[0], pos[1]] = True
-            pos *= PIXEL_SIZE
-            pix = pg.Surface(PIXEL_SIZE)
-            pix.fill(WHITE)
-            CANVAS.blit(pix, pos)
-
-            for i in -1, 1:
-                pix.set_alpha(128)
-                CANVAS.blit(pix, pos + PIXEL_SIZE * np.array([i, 0]))
-                CANVAS.blit(pix, pos + PIXEL_SIZE * np.array([0, i]))
-                pix.set_alpha(64)
-                CANVAS.blit(pix, pos + PIXEL_SIZE * np.array([i, i]))
-                CANVAS.blit(pix, pos + PIXEL_SIZE * np.array([i, -i]))
-
+        pg.draw.circle(CANVAS, WHITE, pg.mouse.get_pos(), RADIUS, 0)
+    elif (pg.mouse.get_pressed()[2]):
+        pg.draw.circle(CANVAS, BLACK, pg.mouse.get_pos(), RADIUS, 0)
         
-    inputs = (pg.surfarray.array2d(pg.transform.smoothscale(CANVAS, (28, 28))) / (2**20)).T.reshape(1, 28*28)
+    inputs = (pg.surfarray.array2d(pg.transform.scale(CANVAS, (28, 28))) / (2**20)).T.reshape(1, 28*28)
     outputs = NN.execute(inputs)[0]
-
 
     SCREEN.fill(BLACK)
     SCREEN.blit(CANVAS, (0, 0))
+
     for i in range(10):
         out = outputs[i]
         text = f"{i} : {outputs[i]:.3f}"
